@@ -9,6 +9,23 @@ build:
 run:
   pre-run:
     - pip3 install -r requirements.txt
+
   command: gunicorn -b 0.0.0.0:$PORT app.wsgi:app
   network:
     port: 8080
+
+  secrets:
+    - name: MAIL_SERVER
+      value-from: "arn:aws:secretsmanager:us-east-1:480607448654:secret:ict_dev_secret-goovBV:MAIL_SERVER::"
+    - name: MAIL_PORT
+      value-from: "arn:aws:secretsmanager:us-east-1:480607448654:secret:ict_dev_secret-goovBV:MAIL_PORT::"
+    - name: MAIL_USE_TLS
+      value-from: "arn:aws:secretsmanager:us-east-1:480607448654:secret:ict_dev_secret-goovBV:MAIL_USE_TLS::"
+    - name: MAIL_USERNAME
+      value-from: "arn:aws:secretsmanager:us-east-1:480607448654:secret:ict_dev_secret-goovBV:MAIL_USERNAME::"
+    - name: ALERT_EMAIL
+      value-from: "arn:aws:secretsmanager:us-east-1:480607448654:secret:ict_dev_secret-goovBV:ALERT_EMAIL::"
+    - name: MAIL_PASSWORD
+      value-from: "arn:aws:secretsmanager:us-east-1:480607448654:secret:ict_dev_secret-goovBV:MAIL_PASSWORD::"
+    - name: MAIL_DEFAULT_SENDER
+      value-from: "arn:aws:secretsmanager:us-east-1:480607448654:secret:ict_dev_secret-goovBV:MAIL_DEFAULT_SENDER::"
