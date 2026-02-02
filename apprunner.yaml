@@ -1,5 +1,5 @@
 version: 1.0
-runtime: python3
+runtime: python3.11
 
 build:
   commands:
@@ -7,6 +7,6 @@ build:
       - pip install -r requirements.txt
 
 run:
-  command: gunicorn -b 0.0.0.0:$PORT wsgi:app
+  command: gunicorn -b 0.0.0.0:$PORT app.wsgi:app
   network:
     port: 8080
