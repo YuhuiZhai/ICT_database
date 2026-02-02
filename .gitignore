@@ -1,0 +1,21 @@
+# python cache / venv
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# flask instance (often contains secrets + sqlite db)
+instance/
+
+# local secrets / passwords
+.env
+pwd.txt
+
+# build / archives
+app.zip
+
+# editor junk
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

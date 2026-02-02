@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6fb;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: white;
+      padding: 40px 60px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      display: block;
+      width: 220px;
+      margin: 10px auto;
+      padding: 12px 0;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+      transform: scale(1.03);
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 0.9em;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Vehicle Usage Database</h1>
+    <a class="btn" href="{{ url_for('user.user_login') }}">User Login</a>
+    <!-- <a class="btn" href="{{ url_for('user.user_register') }}">Register</a> -->
+    <a class="btn" href="{{ url_for('auth.admin_login') }}">Admin Login</a>
+  </div>
+</body>
+</html>

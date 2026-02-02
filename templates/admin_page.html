@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+  <style>
+    table { border-collapse: collapse; margin: 20px auto; }
+    th, td { border: 1px solid #aaa; padding: 8px 12px; }
+    th { background-color: #f0f0f0; }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;">Recent Vehicle Requests</h2>
+  <table>
+    <tr>
+      {% for col in col_names %}
+        <th>{{ col }}</th>
+      {% endfor %}
+    </tr>
+    {% for row in rows %}
+      <tr>
+        {% for col in row %}
+          <td>{{ col }}</td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </table>
+
+  <p style="text-align:center;">
+    Showing the 10 most recent records.  
+  <br>
+  <br>
+  <br>
+  <a href="{{ url_for('user.download_excel') }}" style="font-size: 20px">⬇ Download Excel (.xlsx)</a>
+  </p>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      background: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .form-container {
+      border: 2px solid black;
+      padding: 0;
+      width: 700px;
+    }
+    h2 {
+      text-align: center;
+      margin: 10px 0;
+    }
+    h3 {
+      font-size: 10px;
+      text-align: center;
+      margin: 10px 0;
+      font-style: italic;
+    }
+    .section-title {
+      background: #e0f0f0;
+      font-weight: bold;
+      padding: 5px;
+      border-top: 2px solid black;
+      border-bottom: 2px solid black;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    td {
+      border: 1px solid black;
+      padding: 6px;
+      vertical-align: top;
+    }
+    label {
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 95%;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+    textarea {
+      resize: vertical;
+      height: 40px;
+    }
+    select:disabled {
+      color: black;
+      -webkit-text-fill-color: black; /* for Safari/Chrome */
+      opacity: 1; /* remove default "faded" look */
+    }
+    .full-width {
+      width: 99%;
+    }
+    .submit-row {
+      text-align: center;
+      padding: 10px;
+    }
+    input[type=submit] {
+      padding: 8px 20px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      background-color:  #0077cc;
+    }
+    .required {
+      color: red;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    #ret_date:invalid,
+    #end_mileage:invalid {
+      border: 2px solid #e63946;
+      box-shadow: 0 0 4px rgba(230, 57, 70, 0.4);
+    }
+
+
+  </style>
+</head>
+<body>
+  <form class="form-container" method="POST">
+    <img src="{{ url_for('static', filename='ICT_logo.png') }}" alt="Lab Logo" width="200">
+    <h2>VEHICLE USAGE FORM</h2>
+    <h3>This form must be completed each time a vehicle is used and submitted immediately upon return</h3>
+
+    <div class="section-title">DRIVER INFORMATION</div>
+    <table>
+      <tr><td colspan="3"><label>Full Name <span class="required">*</span></label><br><input type="text" name="name" value="{{model.name}}" readonly></tr></tr>
+      <tr>
+        <td><label>Phone #:</label><br><input type="text" name="phone"  value="{{model.phone}}" readonly></td>
+        <td><label>E-Mail <span class="required">*</span>:</label><br><input type="email" name="email"  value="{{model.email}}" readonly></td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <label>Vehicle Requested <span class="required">*</span>:</label><br>
+          <select name="vehicle" disabled>
+            <option {% if model.vehicle == '2022 RAM' %}selected{% endif %}>2022 RAM</option>
+            <option {% if model.vehicle == '2012 F250' %}selected{% endif %}>2012 F250</option>
+            <option {% if model.vehicle == '2016 AWD Equinox' %}selected{% endif %}>2016 AWD Equinox</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+
+    <div class="section-title">VEHICLE USE</div>
+    <table>
+      <!-- <tr> -->
+        <!-- <td><label>Departure Date <span class="required">*</span>:</label><br><input id="dep_date" type="date" name="dep_date" value="{{model.dep_date}}" readonly></td>
+        <td><label>Return Date <span class="required">*</span>:</label><br><input id="ret_date" type="date" name="ret_date" value="{{model.ret_date}}" readonly></td> -->
+      <!-- </tr> -->
+      <tr>
+        <td>
+          <label>Departure Date <span class="required">*</span>:</label><br>
+          <input id="dep_date" type="text" name="dep_date"
+                value="{{ model.dep_date|mmddyy }}" readonly>
+        </td>
+        <td>
+          <label>Return Date <span class="required">*</span>:</label><br>
+          <input id="ret_date" type="text" name="ret_date"
+                value="{{ model.ret_date|mmddyy }}" readonly>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>Start Odometer Mileage <span class="required">*</span><br> (Example: 1111.2):</label><br>
+          <input id="start_mileage" type="number" name="start_mileage" step="any" value="{{model.start_mileage}}" readonly>
+        </td>
+        <td>
+          <label>End Odometer Mileage <span class="required">*</span><br>(Example: 1145.8):</label><br>
+          <input id="end_mileage" type="number" name="end_mileage" step="any" value="{{model.end_mileage}}" readonly>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="text-align: center">
+        </td>
+      </tr>
+        <td colspan="2"><label>Destination City, State <span class="required">*</span>:</label><br><input type="text" name="destination" class="full-width" value="{{model.destination}}" readonly></td>
+      </tr>
+      <tr>
+        <td colspan="2"><label>Detailed Reason for Trip <span class="required">*</span>:</label><br>
+          <textarea name="purpose" class="full-width" readonly>{{ model.purpose }}</textarea>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"><label>Project Title <span class="required">*</span>:</label><br>
+          <input type="text" name="project" class="full-width" value="{{model.project}}" readonly></td>
+      </tr>
+      <tr>
+        <td colspan="2"><label>Comments (Tolls/ticket, etc.):</label><br>
+          <textarea name="comments" class="full-width" readonly>{{ model.comments }}</textarea>
+      </tr>
+    </table>
+
+    
+    <div class="section-title">RETURN CHECKLIST</div>
+    <table>
+    <tr><td colspan="3"> Refill the gas if it is less than half tank.</td></tr>
+    <tr><td colspan="3"> Clean inside the Truck/Car.</td></tr>
+    <tr><td colspan="3"> Deliver the keys to Research Engineers.</td></tr>
+    </table>
+  </form>
+</body>
+</html>
+

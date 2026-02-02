@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Registration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .register-container {
+      background: #ffffff;
+      padding: 40px 50px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 340px;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #28a745;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn:hover {
+      background-color: #218838;
+      transform: scale(1.02);
+    }
+
+    .error {
+      color: #e63946;
+      font-size: 14px;
+      margin-top: 10px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: opacity 0.3s ease;
+    }
+
+    .hidden {
+      opacity: 0;
+      visibility: hidden;
+      height: 20px;
+    }
+
+    /* NEW: success message style */
+    .message {
+      color: #28a745;
+      font-size: 14px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .links {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .links a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <h2>Create Account</h2>
+    <form method="POST">
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button class="btn" type="submit">Register</button>
+    </form>
+
+    <div class="links">
+      <a href="{{ url_for('user.user_login') }}">Already have an account? Login</a><br>
+      <a href="{{ url_for('user.home') }}">Home</a>
+    </div>
+
+    {# show error if exists #}
+    {% if error %}
+      <div class="error"><span>❌</span> {{ error }}</div>
+    {% else %}
+      <div class="error hidden">&nbsp;</div>
+    {% endif %}
+
+    {# NEW: show success/info message if exists #}
+    {% if message %}
+      <div class="message">{{ message }}</div>
+    {% endif %}
+  </div>
+</body>
+</html>

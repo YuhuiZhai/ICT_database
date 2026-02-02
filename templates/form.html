@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      background: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .form-container {
+      border: 2px solid black;
+      padding: 0;
+      width: 700px;
+    }
+    h2 {
+      text-align: center;
+      margin: 10px 0;
+    }
+    h3 {
+      font-size: 10px;
+      text-align: center;
+      margin: 10px 0;
+      font-style: italic;
+    }
+    .section-title {
+      background: #e0f0f0;
+      font-weight: bold;
+      padding: 5px;
+      border-top: 2px solid black;
+      border-bottom: 2px solid black;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    td {
+      border: 1px solid black;
+      padding: 6px;
+      vertical-align: top;
+    }
+    label {
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 95%;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+    textarea {
+      resize: vertical;
+      height: 40px;
+    }
+    .full-width {
+      width: 99%;
+    }
+    input[type=submit] {
+      padding: 8px 20px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      background-color:  #0077cc;
+    }
+    .required {
+      color: red;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .submit-row {
+      text-align: center;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-top: 2px solid #ccc;
+    }
+
+    button[name="action"] {
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      padding: 10px 22px;
+      margin: 6px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-save {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .btn-save:hover {
+      background-color: #5a6268;
+    }
+
+    .btn-submit {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .btn-submit:hover {
+      background-color: #0056b3;
+    }
+
+    button[name="action"]:active {
+      transform: scale(0.97);
+    }
+
+  /* #ret_date:user-invalid,
+  #end_mileage:user-invalid {
+    border: 2px solid #e63946;
+    box-shadow: 0 0 4px rgba(230, 57, 70, 0.4);
+  } */
+
+
+</style>
+</head>
+<body>
+  <form class="form-container" method="POST"
+      action="{{ url_for('user.vehicle_form', draft_id=record.id) if record else url_for('user.vehicle_form') }}">
+  {% if record %}
+    <input type="hidden" name="draft_id" value="{{ record.id }}">
+  {% endif %}
+    <img src="{{ url_for('static', filename='ICT_logo.png') }}" alt="Lab Logo" width="200">
+    <h2>VEHICLE USAGE FORM</h2>
+    <h3>This form must be completed each time a vehicle is used and submitted immediately upon return</h3>
+
+    <div class="section-title">DRIVER INFORMATION</div>
+    <table>
+      <tr><td colspan="3"><label>Full Name <span class="required">*</span></label><br>
+        <input type="text" name="name" value="{{ record.name or '' }}" required>  
+      <tr>
+        <td><label>Phone #:</label><br>
+          <input type="text" name="phone" value="{{ record.phone or '' }}" >
+      <td>
+        <label>E-Mail <span class="required">*</span>:</label><br>
+        <input type="email" name="email"
+              value="{{ user_email }}"
+              readonly
+              style="background-color:#f3f3f3; color:#555; border:1px solid #ccc;">
+      </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <label>Vehicle Requested <span class="required">*</span>:</label><br>
+          <select name="vehicle" required>
+            <option value="" disabled {% if not record or not record.vehicle %}selected{% endif %}>--- Select a vehicle ---</option>
+            <option {% if record and record.vehicle == '2022 RAM' %}selected{% endif %}>2022 RAM</option>
+            <option {% if record and record.vehicle == '2012 F250' %}selected{% endif %}>2012 F250</option>
+            <option {% if record and record.vehicle == '2016 AWD Equinox' %}selected{% endif %}>2016 AWD Equinox</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+
+    <div class="section-title">VEHICLE USE</div>
+    <table>
+      <tr>
+        <td><label>Departure Date <span class="required">*</span>:</label><br>
+          <input id="dep_date" type="date" name="dep_date" value="{{ record.dep_date or '' }}" required>
+        </td>
+        <td><label>Return Date <span class="required">*</span>:</label><br>
+          <input id="ret_date" type="date" name="ret_date" value="{{ record.ret_date or '' }}" required>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>Start Odometer Mileage <span class="required">*</span><br> (Example: 1111.2):</label><br>
+          <input id="start_mileage" type="number" name="start_mileage" step="any"
+            value="{{ record.start_mileage or '' }}" required>
+        </td>
+        <td>
+          <label>End Odometer Mileage <span class="required">*</span><br>(Example: 1145.8):</label><br>
+          <input id="end_mileage" type="number" name="end_mileage" step="any"
+            value="{{ record.end_mileage or '' }}" required>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="text-align: center">
+        </td>
+      </tr>
+        <td colspan="2"><label>Destination City, State <span class="required">*</span>:</label><br>
+          <input type="text" name="destination" class="full-width"
+          value="{{ record.destination or '' }}" required>
+      </tr>
+      <tr>
+        <td colspan="2"><label>Detailed Reason for Trip <span class="required">*</span>:</label><br>
+          <textarea name="purpose" class="full-width" required>{{ record.purpose or '' }}</textarea>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"><label>Project Title <span class="required">*</span>:</label><br>
+          <input type="text" name="project" class="full-width"
+          value="{{ record.project or '' }}" required>
+      </tr>
+      <tr>
+        <td colspan="2"><label>Comments (Tolls/ticket, etc.):</label><br>
+          <textarea name="comments" class="full-width">{{ record.comments or '' }}</textarea>
+      </tr>
+    </table>
+
+    
+    <div class="section-title">RETURN CHECKLIST</div>
+    <table>
+    <tr><td colspan="3"> Refill the gas if it is less than half tank.</td></tr>
+    <tr><td colspan="3"> Clean inside the Truck/Car.</td></tr>
+    <tr><td colspan="3"> Deliver the keys to Research Engineers.</td></tr>
+    </table>
+
+  <div class="submit-row">
+    <!-- Skip all HTML5 validation on Save -->
+    <button type="submit"
+            name="action"
+            value="save"
+            class="btn-submit"
+            formnovalidate
+            id="btnSave">
+      Save Draft
+    </button>
+
+    <!-- Normal validated submit -->
+    <button type="submit"
+            name="action"
+            value="submit"
+            class="btn-submit"
+            id="btnSubmit">
+      Submit Form
+    </button>
+  </div>
+  </form>
+
+  <script>
+    const form = document.querySelector(".form-container");
+
+    // Restore saved values on load
+    for (let el of form.elements) {
+      if (el.name && localStorage.getItem(el.name)) {
+        el.value = localStorage.getItem(el.name);
+      }
+    }
+
+    // Save locally as user types
+    form.addEventListener("input", (e) => {
+      if (e.target.name) localStorage.setItem(e.target.name, e.target.value);
+    });
+
+    // Elements used in custom validation
+    const start = document.getElementById("start_mileage");
+    const end   = document.getElementById("end_mileage");
+    const dep   = document.getElementById("dep_date");
+    const ret   = document.getElementById("ret_date");
+
+    function validateMileage() {
+      const s = parseFloat(start.value);
+      const e = parseFloat(end.value);
+      if (start.value && end.value) {
+        if (isNaN(s) || isNaN(e)) end.setCustomValidity("");
+        else if (s > e)           end.setCustomValidity("End mileage must be greater than start mileage");
+        else                      end.setCustomValidity("");
+      } else {
+        end.setCustomValidity("");
+      }
+    }
+
+    function validateDates() {
+      if (dep.value && ret.value) {
+        const d = new Date(dep.value);
+        const r = new Date(ret.value);
+        if (r < d) ret.setCustomValidity("Return date must be equal to or greater than departure date");
+        else       ret.setCustomValidity("");
+      } else {
+        ret.setCustomValidity("");
+      }
+    }
+
+    start.addEventListener("input", validateMileage);
+    end.addEventListener("input", validateMileage);
+    dep.addEventListener("input", validateDates);
+    ret.addEventListener("input", validateDates);
+
+    // Submit handler
+    form.addEventListener("submit", (e) => {
+      const action = e.submitter ? e.submitter.value : null;
+
+      if (action === "save") {
+        // Ensure no lingering custom errors block anything
+        [start, end, dep, ret].forEach(el => el && el.setCustomValidity(""));
+
+        // Do NOT preventDefault — with `formnovalidate` the browser will skip validation
+        // Optional: clear local cache on save
+        for (let el of form.elements) if (el.name) localStorage.removeItem(el.name);
+        return; // let the browser submit the form normally (no validation)
+      }
+
+      // For "Submit Form": run custom validation + HTML5 validation
+      validateMileage();
+      validateDates();
+
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        form.reportValidity();
+        return;
+      }
+
+      // Clear cache on successful submit
+      for (let el of form.elements) if (el.name) localStorage.removeItem(el.name);
+      // allow normal submission
+    });
+  </script>
+
+
+</body>
+</html>

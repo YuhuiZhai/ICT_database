@@ -1,0 +1,5 @@
+/* Make table text smaller in Flask-Admin list views */
+.table th,
+.table td {
+  font-size: 5px;   /* or 12px, whatever you like */
+}

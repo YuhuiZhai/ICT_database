@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Thank You</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #0077cc;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .btn:hover { background: #005fa3; }
+  </style>
+</head>
+<body>
+  <h2>Thank you for submitting your vehicle request!</h2>
+  <p>Your form has been recorded successfully.</p>
+  <a class="btn" href="/submit_form">Submit Another One</a>
+  <br><br>
+  <a href="{{ url_for('user.user_my_forms') }}">My Forms</a> |
+  <a href="{{ url_for('user.home') }}">Home</a>
+</body>
+</html>
