@@ -1,12 +1,15 @@
 version: 1.0
-runtime: python3.11
+runtime: python311
 
 build:
   commands:
     build:
-      - pip install -r requirements.txt
+      - echo "build ok"
 
 run:
+  runtime-version: 3.11
+  pre-run:
+    - pip3 install -r requirements.txt
   command: gunicorn -b 0.0.0.0:$PORT app.wsgi:app
   network:
     port: 8080
