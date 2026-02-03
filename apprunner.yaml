@@ -9,8 +9,8 @@ build:
 run:
   pre-run:
     - pip3 install -r requirements.txt
-
-  command: sh -c "gunicorn -b 0.0.0.0:${PORT:-8080} app.wsgi:app"
+  command: >-
+    sh -c 'exec gunicorn -b 0.0.0.0:${PORT:-8080} app.wsgi:app'
   network:
     port: 8080
 
