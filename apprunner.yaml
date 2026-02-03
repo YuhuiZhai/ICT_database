@@ -29,3 +29,5 @@ run:
       value-from: "arn:aws:secretsmanager:us-east-1:480607448654:secret:ict_dev_secret-goovBV:MAIL_PASSWORD::"
     - name: MAIL_DEFAULT_SENDER
       value-from: "arn:aws:secretsmanager:us-east-1:480607448654:secret:ict_dev_secret-goovBV:MAIL_DEFAULT_SENDER::"
+    - name: DATABASE_URL
+      value-from: "arn:aws:secretsmanager:us-east-1:480607448654:secret:ict_dev_secret-goovBV:DATABASE_URL::"
