@@ -21,7 +21,7 @@ def admin_login():
             session["admin_username"] = username
             return redirect("/admin/")
 
-        error = "Invalid admin username or password."
+        error = f"Invalid admin username {username} or password {password}."
 
     return render_template("admin_login.html", error=error)
 
