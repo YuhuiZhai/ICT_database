@@ -31,3 +31,7 @@ run:
       value-from: "arn:aws:secretsmanager:us-east-1:480607448654:secret:ict_dev_secret-goovBV:MAIL_DEFAULT_SENDER::"
     - name: DATABASE_URL
       value-from: "arn:aws:secretsmanager:us-east-1:480607448654:secret:ict_dev_secret-goovBV:DATABASE_URL::"
+    - name: ADMIN_BOOTSTRAP_USERNAME
+      value-from: "arn:aws:secretsmanager:us-east-1:480607448654:secret:ict_dev_secret-goovBV:ADMIN_BOOTSTRAP_USERNAME::"
+    - name: ADMIN_BOOTSTRAP_PASSWORD
+      value-from: "arn:aws:secretsmanager:us-east-1:480607448654:secret:ict_dev_secret-goovBV:ADMIN_BOOTSTRAP_PASSWORD::"
