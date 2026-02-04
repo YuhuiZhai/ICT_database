@@ -16,10 +16,10 @@ def admin_login():
         password = request.form.get("password") or ""
 
         admin_acc = AdminAccount.query.filter_by(username=username).first()
-        # if admin_acc and check_password_hash(admin_acc.password_hash, password):
-        session["logged_in"] = True
-        session["admin_username"] = username
-        return redirect("/admin/")
+        if admin_acc and check_password_hash(admin_acc.password_hash, password):
+            session["logged_in"] = True
+            session["admin_username"] = username
+            return redirect("/admin/")
 
         error = f"Invalid admin username {username} or password {password}."
 
