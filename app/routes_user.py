@@ -70,7 +70,9 @@ def user_register():
             token = serializer.dumps(email, salt="email-confirm")
             confirm_link = url_for("user.user_confirm_email", token=token, _external=True)
 
-            msg = Message(subject="Confirm your account", recipients=[email], sender=current_app.config.get("MAIL_DEFAULT_SENDER"))
+            msg = Message(subject="Confirm your account", 
+                          recipients=[email], 
+                          sender=current_app.config.get("MAIL_DEFAULT_SENDER"))
             msg.body = (
                 "Hi,\n\n"
                 "Please click the link below to confirm your account:\n"
@@ -94,7 +96,10 @@ def user_register():
             db.session.rollback()
             current_app.logger.exception("[Register] Email send failed")
             # error = "Could not send confirmation email right now. Please try again later."
-            error = f"Email failed: {type(e).__name__}: {e}"
+            error = (
+                f"Email failed: {type(e).__name__}: {e}\n"
+                f"MAIL_DEFAULT_SENDER={current_app.config.get('MAIL_DEFAULT_SENDER')!r}"
+            )
             return render_template("user_register.html", error=error, message=None)
 
     return render_template("user_register.html", error=error, message=message)
