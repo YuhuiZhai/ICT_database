@@ -82,15 +82,6 @@ def user_register():
             )
             msg.reply_to = sender   # important
 
-            
-            current_app.logger.info(
-                "DEBUG: config default_sender=%r  msg.sender=%r  reply_to=%r  recipients=%r",
-                current_app.config.get("MAIL_DEFAULT_SENDER"),
-                msg.sender,
-                getattr(msg, "reply_to", None),
-                msg.recipients,
-            )
-
             mail.send(msg)
 
             db.session.commit()
@@ -109,7 +100,10 @@ def user_register():
             # error = "Could not send confirmation email right now. Please try again later."
             error = (
                 f"Email failed: {type(e).__name__}: {e}\n"
-                f"MAIL_DEFAULT_SENDER={current_app.config.get('MAIL_DEFAULT_SENDER')!r}"
+                f"MAIL_DEFAULT_SENDER={current_app.config.get('MAIL_DEFAULT_SENDER')!r}\n"
+                f"msg.sender={getattr(msg, 'sender', None)!r}\n"
+                f"msg.recipients={getattr(msg, 'recipients', None)!r}\n"
+                f"msg.reply_to={getattr(msg, 'reply_to', None)!r}"
             )
             return render_template("user_register.html", error=error, message=None)
 
