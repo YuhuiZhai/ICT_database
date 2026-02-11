@@ -90,10 +90,11 @@ def user_register():
             error = "Email already registered."
             return render_template("user_register.html", error=error, message=None)
 
-        except Exception:
+        except Exception as e:
             db.session.rollback()
             current_app.logger.exception("[Register] Email send failed")
-            error = "Could not send confirmation email right now. Please try again later."
+            # error = "Could not send confirmation email right now. Please try again later."
+            error = f"Email failed: {type(e).__name__}: {e}"
             return render_template("user_register.html", error=error, message=None)
 
     return render_template("user_register.html", error=error, message=message)
