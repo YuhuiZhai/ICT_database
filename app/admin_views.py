@@ -136,4 +136,4 @@ def init_admin(app):
 
     admin.add_view(SecureModelView(VehicleRequestForm, db.session, name="📄 View Form"))
     admin.add_view(DownloadView(name="📊 Download Excel", endpoint="download"))
-    admin.add_view(AdminLogoutView(name="🚪 Logout", endpoint="auth.admin_logout"))
+    admin.add_view(AdminLogoutView(name="🚪 Logout", endpoint="admin_logout"))
