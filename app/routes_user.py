@@ -26,6 +26,7 @@ from sqlalchemy.exc import IntegrityError
 from . import db, mail
 from .models import User, VehicleRequestForm
 from .utils import parse_date_or_none, audit_vehicle_mileage_and_alert
+from .email_utils import send_postmark_email
 
 bp = Blueprint("user", __name__)
 
@@ -37,6 +38,56 @@ def home():
 
 @bp.route("/user_register", methods=["GET", "POST"])
 def user_register():
+    error = None
+    message = None
+
+    if request.method == "POST":
+        email = (request.form.get("email") or "").strip().lower()
+        password = request.form.get("password") or ""
+        password2 = request.form.get("password2") or ""
+
+        if password != password2:
+            return render_template(
+                "user_register.html",
+                error="Passwords do not match.",
+                message=None,
+            )
+        if not email or not password:
+            return render_template("user_register.html",
+                                   error="Email and password are required.",
+                                   message=None)
+
+        if User.query.filter_by(email=email).first():
+            return render_template("user_register.html",
+                                   error="Email already registered",
+                                   message=None)
+
+        hashed_pw = generate_password_hash(password)
+
+        user = User(email=email, password=hashed_pw, is_confirmed=True)
+
+        db.session.add(user)
+        try:
+            db.session.commit()
+            message = "Registration successful."
+            return render_template("user_register.html", error=None, message=message)
+        except IntegrityError:
+            db.session.rollback()
+            return render_template("user_register.html",
+                                   error="Email already registered.",
+                                   message=None)
+        except Exception:
+            db.session.rollback()
+            return render_template("user_register.html",
+                                   error="Registration failed. Please try again later.",
+                                   message=None)
+
+    return render_template("user_register.html", error=error, message=message)
+
+
+
+# @bp.route("/user_register", methods=["GET", "POST"])
+def user_register_old():
     error = None
     message = None
 
