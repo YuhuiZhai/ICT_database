@@ -70,15 +70,18 @@ def user_register():
             token = serializer.dumps(email, salt="email-confirm")
             confirm_link = url_for("user.user_confirm_email", token=token, _external=True)
 
+            sender = current_app.config.get("MAIL_DEFAULT_SENDER")
             msg = Message(subject="Confirm your account", 
                           recipients=[email], 
-                          sender=current_app.config.get("MAIL_DEFAULT_SENDER"))
+                          sender=sender)
             msg.body = (
                 "Hi,\n\n"
                 "Please click the link below to confirm your account:\n"
                 f"{confirm_link}\n\n"
                 "If you did not register this account, you can ignore this email."
             )
+            msg.reply_to = sender   # important
+
 
             mail.send(msg)
 
