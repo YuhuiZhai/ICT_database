@@ -90,7 +90,7 @@ class SecureModelView(ModelView):
 
     def inaccessible_callback(self, name, **kwargs):
         # IMPORTANT: admin blueprint endpoint
-        return redirect(url_for("admin.admin_login"))
+        return redirect(url_for("auth.admin_login"))
 
 
 class SecureBaseView(BaseView):
@@ -98,14 +98,14 @@ class SecureBaseView(BaseView):
         return session.get("logged_in")
 
     def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for("admin.admin_login"))
+        return redirect(url_for("auth.admin_login"))
 
 
 class SecureAdminIndexView(AdminIndexView):
     @expose("/")
     def index(self):
         if not session.get("logged_in"):
-            return redirect(url_for("admin.admin_login"))
+            return redirect(url_for("auth.admin_login"))
         return redirect(url_for("vehiclerequestform.index_view"))
 
 
@@ -120,7 +120,7 @@ class AdminLogoutView(SecureBaseView):
     @expose("/")
     def index(self):
         session.clear()
-        return redirect(url_for("admin.admin_login"))
+        return redirect(url_for("auth.admin_login"))
 
 
 def init_admin(app):
@@ -136,4 +136,4 @@ def init_admin(app):
 
     admin.add_view(SecureModelView(VehicleRequestForm, db.session, name="📄 View Form"))
     admin.add_view(DownloadView(name="📊 Download Excel", endpoint="download"))
-    admin.add_view(AdminLogoutView(name="🚪 Logout", endpoint="admin_logout"))
+    admin.add_view(AdminLogoutView(name="🚪 Logout", endpoint="auth.admin_logout"))

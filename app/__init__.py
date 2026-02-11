@@ -30,7 +30,10 @@ def create_app() -> Flask:
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     app.config.update(
-        MAIL_SERVER=os.environ.get("MAIL_SERVER", "smtp.gmail.com"),
+        # MAIL_SERVER=os.environ.get("MAIL_SERVER", "smtp.gmail.com"),
+        # MAIL_PORT=int(os.environ.get("MAIL_PORT", "587")),
+        # MAIL_USE_TLS=os.environ.get("MAIL_USE_TLS", "true").lower() == "true",
+        MAIL_SERVER=os.environ.get("MAIL_SERVER", "email-smtp.us-east-1.amazonaws.com"),
         MAIL_PORT=int(os.environ.get("MAIL_PORT", "587")),
         MAIL_USE_TLS=os.environ.get("MAIL_USE_TLS", "true").lower() == "true",
         MAIL_USERNAME=os.environ.get("MAIL_USERNAME"),
