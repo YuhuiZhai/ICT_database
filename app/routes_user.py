@@ -82,6 +82,14 @@ def user_register():
             )
             msg.reply_to = sender   # important
 
+            
+            current_app.logger.info(
+                "DEBUG: config default_sender=%r  msg.sender=%r  reply_to=%r  recipients=%r",
+                current_app.config.get("MAIL_DEFAULT_SENDER"),
+                msg.sender,
+                getattr(msg, "reply_to", None),
+                msg.recipients,
+            )
 
             mail.send(msg)
 
