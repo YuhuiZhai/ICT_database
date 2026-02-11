@@ -26,7 +26,6 @@ from sqlalchemy.exc import IntegrityError
 from . import db, mail
 from .models import User, VehicleRequestForm
 from .utils import parse_date_or_none, audit_vehicle_mileage_and_alert
-from .email_utils import send_postmark_email
 
 bp = Blueprint("user", __name__)
 
