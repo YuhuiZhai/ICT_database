@@ -126,7 +126,7 @@ class AdminLogoutView(SecureBaseView):
     @expose("/")
     def index(self):
         session.clear()
-        return redirect(url_for("auth.admin_login"))
+        return redirect(url_for("user.home"))
 
 
 def init_admin(app):
