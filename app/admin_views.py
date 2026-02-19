@@ -1,13 +1,19 @@
-from flask import redirect, url_for, session
+from flask import redirect, url_for, session, request, flash
 from flask_admin import Admin, AdminIndexView, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.filters import FilterEqual
+from .models import VehicleRequestForm, User  
+
 
 from . import db
 from .models import VehicleRequestForm
 
 
 class SecureModelView(ModelView):
+    can_export = True
+    export_types = ["csv"]
+    list_template = "admin_filter_csv.html"  
+    
     column_display_pk = True
     can_create = False
     can_edit = True
@@ -137,3 +143,32 @@ def init_admin(app):
     admin.add_view(SecureModelView(VehicleRequestForm, db.session, name="📄 View Form"))
     admin.add_view(DownloadView(name="📊 Download Excel", endpoint="download"))
     admin.add_view(AdminLogoutView(name="🚪 Logout", endpoint="admin_logout"))
+    admin.add_view(ClearDatabaseView(name="Clear Database", endpoint="clear_db"))
+    
+class ClearDatabaseView(SecureBaseView):
+    @expose("/", methods=["GET", "POST"])
+    def index(self):
+        if request.method == "POST":
+            c1 = (request.form.get("confirm1") or "").strip().lower()
+            c2 = (request.form.get("confirm2") or "").strip().lower()
+
+            if c1 != "clear" or c2 != "clear":
+                flash('Not cleared. Please type "clear" in BOTH boxes.', "error")
+                return self.render("admin_clear_db.html")
+
+            # ✅ Decide what "clear all data" means:
+            # Usually you want to clear application data but keep admin accounts.
+            try:
+                db.session.query(VehicleRequestForm).delete()
+                db.session.query(User).delete()
+                # DO NOT delete AdminAccount unless you explicitly want to lock yourself out
+                db.session.commit()
+                flash("Database cleared successfully.", "success")
+            except Exception as e:
+                db.session.rollback()
+                flash(f"Clear failed: {e}", "error")
+
+            return redirect(url_for("vehiclerequestform.index_view"))
+
+        return self.render("admin_clear_db.html")
+    

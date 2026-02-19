@@ -67,9 +67,9 @@ def user_register():
 
         db.session.add(user)
         try:
-            db.session.commit()
-            message = "Registration successful."
-            return render_template("user_register.html", error=None, message=message)
+            db.session.commit()                 # ensure user.id exists
+            login_user(user, remember=True)     # <-- auto login
+            return redirect(url_for("user.user_my_forms"))  # /submit_form
         except IntegrityError:
             db.session.rollback()
             return render_template("user_register.html",
@@ -203,6 +203,7 @@ def user_login():
 def user_logout():
     logout_user()
     return redirect(url_for("user.home"))
+    # return redirect("/")
 
 
 # ---------- Password Reset ----------

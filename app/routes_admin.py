@@ -54,4 +54,5 @@ def admin_reset_password():
 @bp.route("/logout_admin")
 def logout_admin():
     session.clear()
-    return redirect(url_for("auth.admin_login"))
+    # return redirect(url_for("auth.admin_login"))
+    return redirect(url_for("user.home"))
