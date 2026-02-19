@@ -1,0 +1,38 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+  <div class="container" style="max-width: 720px; margin-top: 30px;">
+    <h2>Clear Database</h2>
+    <p style="color:#b00020;">
+      This will permanently delete data from the database (forms + users). This cannot be undone.
+    </p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div style="margin: 12px 0;">
+          {% for category, msg in messages %}
+            <div class="alert alert-{{ 'danger' if category=='error' else category }}">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post">
+      <div class="form-group">
+        <label>Type <b>"clear"</b> to confirm</label>
+        <input class="form-control" name="confirm1" autocomplete="off" />
+      </div>
+
+      <div class="form-group" style="margin-top: 12px;">
+        <label>Type <b>"clear"</b> again</label>
+        <input class="form-control" name="confirm2" autocomplete="off" />
+      </div>
+
+      <button class="btn btn-danger" style="margin-top: 16px;">
+        Clear Database
+      </button>
+      <a class="btn btn-default" href="{{ url_for('vehiclerequestform.index_view') }}" style="margin-top: 16px;">
+        Cancel
+      </a>
+    </form>
+  </div>
+{% endblock %}

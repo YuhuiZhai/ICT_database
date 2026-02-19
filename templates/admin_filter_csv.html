@@ -1,0 +1,14 @@
+{% extends 'admin/model/list.html' %}
+
+{% block head_css %}
+  {{ super() }}
+  <style>
+    /* Hide the small blue filter toggle/pill on the left */
+    .filters-toggle,
+    .filter-toggle,
+    .btn-filters,
+    #filters-toggle {
+      display: none !important;
+    }
+  </style>
+{% endblock %}
