@@ -83,9 +83,10 @@ def send_mileage_error_alert(subject: str, body: str):
     if not alert_email:
         print("[MileageAudit] ALERT_EMAIL not set; skipping email.")
         return
+    sender = os.environ.get("MAIL_DEFAULT_SENDER", "yuhuitestict@gmail.com").strip()
 
     try:
-        msg = Message(subject=subject, sender=alert_email, recipients=[alert_email])
+        msg = Message(subject=subject, sender=sender, recipients=[alert_email])
         msg.body = body
         mail.send(msg)
     except Exception as e:
