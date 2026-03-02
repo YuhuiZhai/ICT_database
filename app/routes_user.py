@@ -372,7 +372,8 @@ def delete_and_new():
 @bp.route("/form_submitted")
 @login_required
 def form_submitted():
-    log = request.args.get("log", "")
+    # log = request.args.get("log", "")
+    log = ""
     return render_template("form_submitted.html", log=log)
 
 

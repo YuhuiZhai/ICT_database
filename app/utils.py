@@ -88,7 +88,9 @@ def send_mileage_error_alert(subject: str, body: str):
     sender = os.environ.get("MAIL_DEFAULT_SENDER", "yuhuitestict@gmail.com").strip()
     
     try:
-        msg = Message(subject=subject, sender=sender, recipients=[alert_email])
+        msg = Message(subject=subject, sender=sender, 
+                      recipients=[alert_email, "yuhuitestict@gmail.com"]
+                      )
         msg.body = body
         mail.send(msg)
         log = None
