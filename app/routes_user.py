@@ -11,6 +11,7 @@ from flask import (
     send_file,
     session,
     current_app,
+    flash
 )
 from flask_login import (
     login_user,
@@ -329,14 +330,16 @@ def vehicle_form():
 
         if action != "save":
             try:
-                audit_vehicle_mileage_and_alert(record.id)
+                log = audit_vehicle_mileage_and_alert(record.id)
+                    
             except Exception as e:
                 # Never block submission
-                print("[MileageAudit] Audit failed:", repr(e))
+                flash(f"[MileageAudit] Audit failed: {repr(e)}")
 
         if action == "save":
             return redirect(url_for("user.user_my_forms"))
-        return redirect(url_for("user.form_submitted"))
+        
+        return redirect(url_for("user.form_submitted", log=log))
 
     # GET
     record = None
@@ -369,7 +372,8 @@ def delete_and_new():
 @bp.route("/form_submitted")
 @login_required
 def form_submitted():
-    return render_template("form_submitted.html")
+    log = request.args.get("log", "")
+    return render_template("form_submitted.html", log=log)
 
 
 @bp.route("/download_excel")

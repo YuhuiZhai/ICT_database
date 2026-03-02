@@ -80,19 +80,24 @@ def send_mileage_error_alert(subject: str, body: str):
     Best-effort email. Failure should not block submission.
     """
     alert_email = _get_alert_email()
+    
     if not alert_email:
-        print("[MileageAudit] ALERT_EMAIL not set; skipping email.")
-        return
+        log = "[MileageAudit] ALERT_EMAIL not set; skipping email."
+        return log
+    
     sender = os.environ.get("MAIL_DEFAULT_SENDER", "yuhuitestict@gmail.com").strip()
-
+    
     try:
         msg = Message(subject=subject, sender=sender, recipients=[alert_email])
         msg.body = body
         mail.send(msg)
+        log = None
+                
     except Exception as e:
         # do not block user; log for server debugging
-        print("[MileageAudit] Email send failed:", repr(e))
-
+        log = f"[MileageAudit] Email send failed: {repr(e)}" 
+    
+    return log
 
 def audit_vehicle_mileage_and_alert(record_id: int):
     """
@@ -158,7 +163,7 @@ def audit_vehicle_mileage_and_alert(record_id: int):
                 issues.append("Gap > 5 miles detected to the previous record.")
 
     if not issues:
-        return
+        return 
 
     subject = f"[Vehicle Mileage Check] {vehicle} - Submitted Record #{rec.id}"
 
@@ -184,4 +189,5 @@ def audit_vehicle_mileage_and_alert(record_id: int):
         for r, s, e in overlaps:
             body.append(f"  - Record ID: {r.id}, Name: {r.name}, Start mileage: {s}, End mileage: {e}\n")
 
-    send_mileage_error_alert(subject, "".join(body))
+    log = send_mileage_error_alert(subject, "".join(body))
+    return log
