@@ -3,29 +3,43 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from . import db
 from .models import AdminAccount
+import os
 
 bp = Blueprint("auth", __name__)
 
+def _ensure_second_admin():
+    username = os.environ.get("ADMIN_BOOTSTRAP_USERNAME_2")
+    password = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD_2")
 
+    if not username or not password:
+        return
+
+    acc = AdminAccount.query.filter_by(username=username).first()
+    if acc is None:
+        acc = AdminAccount(
+            username=username,
+            password_hash=generate_password_hash(password, method="pbkdf2:sha256"),
+        )
+        db.session.add(acc)
+        db.session.commit()
+        
 @bp.route("/admin_login", methods=["GET", "POST"])
 def admin_login():
     error = None
 
     if request.method == "POST":
+        _ensure_second_admin()
+
         username = (request.form.get("username") or "").strip()
         password = request.form.get("password") or ""
-        admin_acc = AdminAccount.query.filter_by(username=username).first()
 
-        if admin_acc is None:
-            error = "Invalid username or password"
-        else:
-            ok = check_password_hash(admin_acc.password_hash, password)
-            if ok:
-                session["logged_in"] = True
-                session["admin_username"] = username
-                return redirect("/admin/")
-            else:
-                error = "Invalid username or password"
+        admin_acc = AdminAccount.query.filter_by(username=username).first()
+        if admin_acc and check_password_hash(admin_acc.password_hash, password):
+            session["logged_in"] = True
+            session["admin_username"] = username
+            return redirect("/admin/")
+
+        error = "Invalid username or password"
 
     return render_template("admin_login.html", error=error)
 
