@@ -34,12 +34,15 @@ def admin_login():
         password = request.form.get("password") or ""
 
         admin_acc = AdminAccount.query.filter_by(username=username).first()
-        if admin_acc and check_password_hash(admin_acc.password_hash, password):
+
+        if admin_acc is None:
+            error = f"Invalid username {username}; account does not exist"
+        elif check_password_hash(admin_acc.password_hash, password):
             session["logged_in"] = True
             session["admin_username"] = username
             return redirect("/admin/")
-
-        error = "Invalid username or password"
+        else:
+            error = f"Invalid password for username {username}"
 
     return render_template("admin_login.html", error=error)
 
