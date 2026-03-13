@@ -37,9 +37,12 @@ def admin_login():
         admin_acc = AdminAccount.query.filter_by(username=username).first()
 
         if admin_acc is None:
+            user = os.environ.get("ADMIN_BOOTSTRAP_USERNAME")
+            pwd = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD")
             user2 = os.environ.get("ADMIN_BOOTSTRAP_USERNAME_2")
             pwd2 = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD_2")
-            error = f"Invalid username {username}; account does not exist; user2 {user2} pwd2 {pwd2}"
+            error = f"Invalid username {username}; account does not exist; \
+                user2 {user} pwd2 {pwd} user2 {user2} pwd2 {pwd2}"
             
         elif check_password_hash(admin_acc.password_hash, password):
             session["logged_in"] = True
