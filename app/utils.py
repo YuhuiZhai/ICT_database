@@ -55,7 +55,11 @@ def parse_date_or_none(s):
 # -------------------------
 def _get_alert_email() -> str:
     # Read at call time (so env var changes take effect without restart)
-    return os.environ.get("ALERT_EMAIL", "yuhuitestict@gmail.com").strip()
+    emails = [
+    os.environ.get("ALERT_EMAIL", "").strip(),
+    os.environ.get("ALERT_EMAIL_2", "").strip(),    
+    ]
+    return [e for e in emails if e]
 
 
 def parse_mileage_or_none(v):
@@ -81,7 +85,7 @@ def send_mileage_error_alert(subject: str, body: str):
     """
     alert_email = _get_alert_email()
     
-    if not alert_email:
+    if len(alert_email) == 0:
         log = "[MileageAudit] ALERT_EMAIL not set; skipping email."
         return log
     
@@ -89,7 +93,7 @@ def send_mileage_error_alert(subject: str, body: str):
     
     try:
         msg = Message(subject=subject, sender=sender, 
-                      recipients=[alert_email, "yuhuitestict@gmail.com"]
+                      recipients=[*alert_email, "yuhuitestict@gmail.com"]
                       )
         msg.body = body
         mail.send(msg)

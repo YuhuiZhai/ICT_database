@@ -54,13 +54,21 @@
     .btn {
       display: inline-block;
       padding: 10px 20px;
+      min-width: 100px;
+      text-align: center;
       background-color: #007bff;
       color: white;
       border-radius: 8px;
       text-decoration: none;
       transition: background-color 0.2s;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1.2;
+      box-sizing: border-box;
+      vertical-align: middle;
     }
-
+    
     .btn:hover {
       background-color: #0056b3;
     }
@@ -129,6 +137,13 @@
         <td>
           {% if r.status == "draft" %}
             <a href="{{ url_for('user.vehicle_form', draft_id=r.id) }}" class="btn">Continue</a>
+
+            <form method="POST"
+                  action="{{ url_for('user.delete_draft', form_id=r.id) }}"
+                  style="display:inline;"
+                  onsubmit="return confirm('Delete this unfinished form?');">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
           {% else %}
             <a href="{{ url_for('user.user_view_form', form_id=r.id) }}" class="btn btn-secondary">View</a>
           {% endif %}

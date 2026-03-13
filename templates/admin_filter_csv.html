@@ -3,12 +3,27 @@
 {% block head_css %}
   {{ super() }}
   <style>
-    /* Hide the small blue filter toggle/pill on the left */
     .filters-toggle,
     .filter-toggle,
     .btn-filters,
     #filters-toggle {
       display: none !important;
+    }
+
+    .container {
+      width: 98% !important;
+      max-width: none !important;
+    }
+
+    .table,
+    .model-list {
+      width: 100% !important;
+    }
+
+    .table th,
+    .table td {
+      white-space: nowrap;
+      padding: 8px 12px;
     }
   </style>
 {% endblock %}

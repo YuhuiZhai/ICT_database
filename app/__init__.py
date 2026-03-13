@@ -95,24 +95,54 @@ def create_app() -> Flask:
     return app
 
 
+# def _maybe_bootstrap_admin():
+#     """
+#     Optional: create a default admin account if env vars are set.
+#     """
+#     from werkzeug.security import generate_password_hash
+#     from .models import AdminAccount
+
+#     username = os.environ.get("ADMIN_BOOTSTRAP_USERNAME")
+#     password = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD")
+#     if not username or not password:
+#         return
+
+#     if AdminAccount.query.filter_by(username=username).first():
+#         return
+
+#     acc = AdminAccount(
+#         username=username,
+#         password_hash=generate_password_hash(password, method="pbkdf2:sha256"),
+#     )
+#     db.session.add(acc)
+#     db.session.commit()
+
 def _maybe_bootstrap_admin():
-    """
-    Optional: create a default admin account if env vars are set.
-    """
     from werkzeug.security import generate_password_hash
     from .models import AdminAccount
 
-    username = os.environ.get("ADMIN_BOOTSTRAP_USERNAME")
-    password = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD")
-    if not username or not password:
-        return
+    admins = [
+        (
+            os.environ.get("ADMIN_BOOTSTRAP_USERNAME"),
+            os.environ.get("ADMIN_BOOTSTRAP_PASSWORD"),
+        ),
+        (
+            os.environ.get("ADMIN_BOOTSTRAP_USERNAME_2"),
+            os.environ.get("ADMIN_BOOTSTRAP_PASSWORD_2"),
+        ),
+    ]
 
-    if AdminAccount.query.filter_by(username=username).first():
-        return
+    for username, password in admins:
+        if not username or not password:
+            continue
 
-    acc = AdminAccount(
-        username=username,
-        password_hash=generate_password_hash(password, method="pbkdf2:sha256"),
-    )
-    db.session.add(acc)
+        if AdminAccount.query.filter_by(username=username).first():
+            continue
+
+        acc = AdminAccount(
+            username=username,
+            password_hash=generate_password_hash(password, method="pbkdf2:sha256"),
+        )
+        db.session.add(acc)
+
     db.session.commit()

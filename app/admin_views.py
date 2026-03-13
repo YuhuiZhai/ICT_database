@@ -43,15 +43,33 @@ class SecureModelView(ModelView):
         ),
     ]
 
+    # column_labels = {
+    #     "dep_date": "Departure Date",
+    #     "ret_date": "Return Date",
+    #     "start_mileage": "Start Mileage",
+    #     "end_mileage": "End Mileage",
+    #     "submitted_time": "Submitted Time",
+    #     "admin_time": "Administrator Comment",
+    # }
+    
     column_labels = {
-        "dep_date": "Departure Date",
-        "ret_date": "Return Date",
-        "start_mileage": "Start Mileage",
-        "end_mileage": "End Mileage",
+        "name": "Name*",
+        "phone": "Phone Number",
+        "email": "Email Address*",
+        "vehicle": "Vehicle*",
+        "dep_date": "Departure Date*",
+        "ret_date": "Return Date*",
+        "start_mileage": "Starting Mileage*",
+        "end_mileage": "Ending Mileage*",
+        "destination": "Destination*",
+        "purpose": "Purpose*",
+        "project": "Project*",
+        "comments": "Comments",
         "submitted_time": "Submitted Time",
-        "admin_time": "Administrator Comment",
+        "admin_comment": "Admin Comment",
+        "status": "Status",
     }
-
+    
     column_default_sort = ("submitted_time", True)  # True = descending
     page_size = 10
 

@@ -437,3 +437,24 @@ def download_excel():
         as_attachment=True,
         download_name="vehicle_request_form.xlsx",
     )
+
+
+@bp.route("/delete_draft/<int:form_id>", methods=["POST"])
+@login_required
+def delete_draft(form_id):
+    record = VehicleRequestForm.query.get_or_404(form_id)
+
+    # only allow the owner to delete
+    if record.email != current_user.email:
+        return "❌ Unauthorized", 403
+
+    # only allow deleting unfinished drafts
+    if record.status != "draft":
+        flash("Only draft forms can be deleted.", "warning")
+        return redirect(url_for("user.user_my_forms"))
+
+    db.session.delete(record)
+    db.session.commit()
+
+    flash("Draft deleted successfully.", "success")
+    return redirect(url_for("user.user_my_forms"))
