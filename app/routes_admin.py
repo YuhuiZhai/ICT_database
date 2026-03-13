@@ -42,7 +42,7 @@ def admin_login():
             user2 = os.environ.get("ADMIN_BOOTSTRAP_USERNAME_2")
             pwd2 = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD_2")
             error = f"Invalid username {username}; account does not exist; \
-                user2 {user} pwd2 {pwd} user2 {user2} pwd2 {pwd2}"
+                keys: {os.environ.keys()}"
             
         elif check_password_hash(admin_acc.password_hash, password):
             session["logged_in"] = True
