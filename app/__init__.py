@@ -132,17 +132,24 @@ def _maybe_bootstrap_admin():
         ),
     ]
 
+    changed = False
+
     for username, password in admins:
         if not username or not password:
             continue
 
-        if AdminAccount.query.filter_by(username=username).first():
-            continue
+        acc = AdminAccount.query.filter_by(username=username).first()
 
-        acc = AdminAccount(
-            username=username,
-            password_hash=generate_password_hash(password, method="pbkdf2:sha256"),
-        )
-        db.session.add(acc)
+        if acc is None:
+            acc = AdminAccount(
+                username=username,
+                password_hash=generate_password_hash(password, method="pbkdf2:sha256"),
+            )
+            db.session.add(acc)
+            changed = True
+        else:
+            acc.password_hash = generate_password_hash(password, method="pbkdf2:sha256")
+            changed = True
 
-    db.session.commit()
+    if changed:
+        db.session.commit()
