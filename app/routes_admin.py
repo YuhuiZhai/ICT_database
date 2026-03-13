@@ -22,6 +22,7 @@ def _ensure_second_admin():
         )
         db.session.add(acc)
         db.session.commit()
+
         
 @bp.route("/admin_login", methods=["GET", "POST"])
 def admin_login():
@@ -36,7 +37,10 @@ def admin_login():
         admin_acc = AdminAccount.query.filter_by(username=username).first()
 
         if admin_acc is None:
-            error = f"Invalid username {username}; account does not exist"
+            user2 = os.environ.get("ADMIN_BOOTSTRAP_USERNAME_2")
+            pwd2 = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD_2")
+            error = f"Invalid username {username}; account does not exist; user2 {user2} pwd2 {pwd2}"
+            
         elif check_password_hash(admin_acc.password_hash, password):
             session["logged_in"] = True
             session["admin_username"] = username
