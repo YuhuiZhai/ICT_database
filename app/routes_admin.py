@@ -37,10 +37,6 @@ def admin_login():
         admin_acc = AdminAccount.query.filter_by(username=username).first()
 
         if admin_acc is None:
-            user = os.environ.get("ADMIN_BOOTSTRAP_USERNAME")
-            pwd = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD")
-            user2 = os.environ.get("ADMIN_BOOTSTRAP_USERNAME_2")
-            pwd2 = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD_2")
             error = f"Invalid username {username}; account does not exist; \
                 keys: {os.environ.keys()}"
             

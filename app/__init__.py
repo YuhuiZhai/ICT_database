@@ -127,8 +127,8 @@ def _maybe_bootstrap_admin():
             os.environ.get("ADMIN_BOOTSTRAP_PASSWORD"),
         ),
         (
-            os.environ.get("ADMIN_BOOTSTRAP_USERNAME_2"),
-            os.environ.get("ADMIN_BOOTSTRAP_PASSWORD_2"),
+            os.environ.get("ENGINEER_BOOTSTRAP_USERNAME"),
+            os.environ.get("ENGINEER_BOOTSTRAP_PASSWORD"),
         ),
     ]
 
