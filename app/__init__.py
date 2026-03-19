@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_mail import Mail
 from itsdangerous import URLSafeTimedSerializer
+import json
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -117,24 +118,38 @@ def create_app() -> Flask:
 #     db.session.add(acc)
 #     db.session.commit()
 
+def _get_env_list(name: str) -> list[str]:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return []
+
+    try:
+        value = json.loads(raw)
+    except json.JSONDecodeError:
+        # fallback: allow simple comma-separated strings
+        value = [x.strip() for x in raw.split(",") if x.strip()]
+
+    if isinstance(value, list):
+        return [str(x).strip() for x in value if str(x).strip()]
+
+    return [str(value).strip()]
+
 def _maybe_bootstrap_admin():
     from werkzeug.security import generate_password_hash
     from .models import AdminAccount
 
-    admins = [
-        (
-            os.environ.get("ADMIN_BOOTSTRAP_USERNAME"),
-            os.environ.get("ADMIN_BOOTSTRAP_PASSWORD"),
-        ),
-        (
-            os.environ.get("ENGINEER_BOOTSTRAP_USERNAME"),
-            os.environ.get("ENGINEER_BOOTSTRAP_PASSWORD"),
-        ),
-    ]
+    usernames = _get_env_list("ADMIN_BOOTSTRAP_USERNAME")
+    passwords = _get_env_list("ADMIN_BOOTSTRAP_PASSWORD")
+
+    if len(usernames) != len(passwords):
+        raise ValueError(
+            f"ADMIN_BOOTSTRAP_USERNAME has {len(usernames)} items but "
+            f"ADMIN_BOOTSTRAP_PASSWORD has {len(passwords)} items."
+        )
 
     changed = False
 
-    for username, password in admins:
+    for username, password in zip(usernames, passwords):
         if not username or not password:
             continue
 

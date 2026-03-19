@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from flask_mail import Message
-
+import json
 from . import mail
 from .models import VehicleRequestForm
 
@@ -52,15 +52,29 @@ def parse_date_or_none(s):
 
 # -------------------------
 # Mileage audit + alerting
-# -------------------------
-def _get_alert_email() -> str:
-    # Read at call time (so env var changes take effect without restart)
-    emails = [
-    os.environ.get("ALERT_EMAIL", "").strip(),
-    os.environ.get("ALERT_EMAIL_2", "").strip(),    
-    ]
-    return [e for e in emails if e]
+# # -------------------------
+# def _get_alert_email() -> str:
+#     # Read at call time (so env var changes take effect without restart)
+#     emails = [
+#     os.environ.get("ALERT_EMAIL", "").strip(),
+#     os.environ.get("ALERT_EMAIL_2", "").strip(),    
+#     ]
+#     return [e for e in emails if e]
 
+def _get_alert_email() -> list[str]:
+    raw = os.environ.get("ALERT_EMAIL", "").strip()
+    if not raw:
+        return []
+
+    try:
+        value = json.loads(raw)
+    except json.JSONDecodeError:
+        value = [x.strip() for x in raw.strip("[]").split(",") if x.strip()]
+
+    if isinstance(value, list):
+        return [str(x).strip() for x in value if str(x).strip()]
+
+    return [str(value).strip()]
 
 def parse_mileage_or_none(v):
     """
@@ -80,29 +94,27 @@ def parse_mileage_or_none(v):
 
 
 def send_mileage_error_alert(subject: str, body: str):
-    """
-    Best-effort email. Failure should not block submission.
-    """
     alert_email = _get_alert_email()
-    
+
     if len(alert_email) == 0:
         log = "[MileageAudit] ALERT_EMAIL not set; skipping email."
         return log
-    
+
     sender = os.environ.get("MAIL_DEFAULT_SENDER", "yuhuitestict@gmail.com").strip()
-    
+
     try:
-        msg = Message(subject=subject, sender=sender, 
-                      recipients=[*alert_email, "yuhuitestict@gmail.com"]
-                      )
+        msg = Message(
+            subject=subject,
+            sender=sender,
+            recipients=[*alert_email, "yuhuitestict@gmail.com"]
+        )
         msg.body = body
         mail.send(msg)
         log = None
-                
+
     except Exception as e:
-        # do not block user; log for server debugging
-        log = f"[MileageAudit] Email send failed: {repr(e)}" 
-    
+        log = f"[MileageAudit] Email send failed: {repr(e)}"
+
     return log
 
 def audit_vehicle_mileage_and_alert(record_id: int):
