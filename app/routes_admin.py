@@ -7,43 +7,23 @@ import os
 
 bp = Blueprint("auth", __name__)
 
-def _ensure_second_admin():
-    username = os.environ.get("ADMIN_BOOTSTRAP_USERNAME_2")
-    password = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD_2")
-
-    if not username or not password:
-        return
-
-    acc = AdminAccount.query.filter_by(username=username).first()
-    if acc is None:
-        acc = AdminAccount(
-            username=username,
-            password_hash=generate_password_hash(password, method="pbkdf2:sha256"),
-        )
-        db.session.add(acc)
-        db.session.commit()
-
         
 @bp.route("/admin_login", methods=["GET", "POST"])
 def admin_login():
     error = None
 
     if request.method == "POST":
-        _ensure_second_admin()
 
         username = (request.form.get("username") or "").strip()
         password = request.form.get("password") or ""
 
         admin_acc = AdminAccount.query.filter_by(username=username).first()
 
-        if admin_acc is None:
-            error = f"Invalid username {username}; account does not exist; \
-                keys: {os.environ.keys()}"
-            
-        elif check_password_hash(admin_acc.password_hash, password):
-            session["logged_in"] = True
-            session["admin_username"] = username
-            return redirect("/admin/")
+        if admin_acc is not None:
+            if check_password_hash(admin_acc.password_hash, password):
+                session["logged_in"] = True
+                session["admin_username"] = username
+                return redirect("/admin/")
         else:
             error = f"Invalid password for username {username}"
 
