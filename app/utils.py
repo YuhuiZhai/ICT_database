@@ -106,7 +106,7 @@ def send_mileage_error_alert(subject: str, body: str):
         msg = Message(
             subject=subject,
             sender=sender,
-            recipients=[*alert_email, "yuhuitestict@gmail.com"]
+            recipients=[*alert_email]
         )
         msg.body = body
         mail.send(msg)
