@@ -207,6 +207,7 @@ def user_logout():
     # return redirect("/")
 
 
+# ---------- Password Reset ----------
 @bp.route("/user_forgot_password", methods=["GET", "POST"])
 def user_forgot_password():
     message = None
@@ -219,46 +220,47 @@ def user_forgot_password():
         if not user:
             message = "No account found with that email"
         else:
-            # Demo-only bypass: skip the email verification link and
-            # send the user directly to the reset form.
+            # Demo-only: skip email verification and go directly to reset page
             return redirect(url_for("user.user_reset_password", email=email))
 
     return render_template("user_forgot_password.html", message=message, success=success)
 
 
-@bp.route("/user_reset_password", methods=["GET", "POST"], defaults={"token": None})
-@bp.route("/user_reset_password/<token>", methods=["GET", "POST"])
-def user_reset_password(token):
-    email = None
-
-    if token:
-        serializer = current_app.config["SERIALIZER"]
-        try:
-            email = serializer.loads(token, salt="password-reset", max_age=3600)
-        except SignatureExpired:
-            return render_template("user_reset_password.html", message="Link expired", success=False)
-        except BadSignature:
-            return render_template("user_reset_password.html", message="Invalid link", success=False)
-    else:
-        # Demo-only direct reset path with no verification.
-        email = (request.args.get("email") or request.form.get("email") or "").strip().lower()
-        if not email:
-            return render_template("user_reset_password.html", message="Missing email", success=False)
+@bp.route("/user_reset_password", methods=["GET", "POST"])
+def user_reset_password():
+    message = None
+    success = False
 
     if request.method == "POST":
+        email = (request.form.get("email") or "").strip().lower()
         new_pw = request.form.get("password") or ""
-        user = User.query.filter_by(email=email).first()
+        password2 = request.form.get("password2") or ""
 
-        if not user:
-            return render_template("user_reset_password.html", message="User not found", success=False)
-        if not new_pw:
-            return render_template("user_reset_password.html", message="Password cannot be empty", success=False)
+        if not email:
+            message = "Email is required"
+        elif not new_pw:
+            message = "New password is required"
+        elif new_pw != password2:
+            message = "Passwords do not match"
+        else:
+            user = User.query.filter_by(email=email).first()
 
-        user.password = generate_password_hash(new_pw)
-        db.session.commit()
-        return redirect(url_for("user.user_login"))
+            if not user:
+                message = "User not found"
+            else:
+                user.password = generate_password_hash(new_pw)
+                db.session.commit()
+                return redirect(url_for("user.user_login"))
 
-    return render_template("user_reset_password.html", message=None, success=False)
+    else:
+        email = (request.args.get("email") or "").strip().lower()
+
+    return render_template(
+        "user_reset_password.html",
+        message=message,
+        success=success,
+        email=email,
+    )
 
 @bp.route("/user_my_forms")
 @login_required
