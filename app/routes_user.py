@@ -207,7 +207,6 @@ def user_logout():
     # return redirect("/")
 
 
-# ---------- Password Reset ----------
 @bp.route("/user_forgot_password", methods=["GET", "POST"])
 def user_forgot_password():
     message = None
@@ -220,51 +219,46 @@ def user_forgot_password():
         if not user:
             message = "No account found with that email"
         else:
-            serializer = current_app.config["SERIALIZER"]
-            token = serializer.dumps(email, salt="password-reset")
-            link = url_for("user.user_reset_password", token=token, _external=True)
-
-            msg = Message("Reset your password", recipients=[email])
-            msg.body = f"Click here to reset your password: {link}\n\n(This link expires in 1 hour.)"
-
-            try:
-                mail.send(msg)
-                message = "A reset link has been sent to your email"
-                success = True
-            except Exception as e:
-                print("[Mail] password reset send failed:", repr(e))
-                message = (
-                    "We could not send the reset email from the server right now. "
-                    "Please try again later or contact the admin."
-                )
-                success = False
+            # Demo-only bypass: skip the email verification link and
+            # send the user directly to the reset form.
+            return redirect(url_for("user.user_reset_password", email=email))
 
     return render_template("user_forgot_password.html", message=message, success=success)
 
 
+@bp.route("/user_reset_password", methods=["GET", "POST"], defaults={"token": None})
 @bp.route("/user_reset_password/<token>", methods=["GET", "POST"])
 def user_reset_password(token):
-    serializer = current_app.config["SERIALIZER"]
-    try:
-        email = serializer.loads(token, salt="password-reset", max_age=3600)
-    except SignatureExpired:
-        return render_template("user_reset_password.html", message="Link expired", success=False)
-    except BadSignature:
-        return render_template("user_reset_password.html", message="Invalid link", success=False)
+    email = None
+
+    if token:
+        serializer = current_app.config["SERIALIZER"]
+        try:
+            email = serializer.loads(token, salt="password-reset", max_age=3600)
+        except SignatureExpired:
+            return render_template("user_reset_password.html", message="Link expired", success=False)
+        except BadSignature:
+            return render_template("user_reset_password.html", message="Invalid link", success=False)
+    else:
+        # Demo-only direct reset path with no verification.
+        email = (request.args.get("email") or request.form.get("email") or "").strip().lower()
+        if not email:
+            return render_template("user_reset_password.html", message="Missing email", success=False)
 
     if request.method == "POST":
         new_pw = request.form.get("password") or ""
         user = User.query.filter_by(email=email).first()
 
-        if user:
-            user.password = generate_password_hash(new_pw)
-            db.session.commit()
-            return redirect(url_for("user.user_login"))
+        if not user:
+            return render_template("user_reset_password.html", message="User not found", success=False)
+        if not new_pw:
+            return render_template("user_reset_password.html", message="Password cannot be empty", success=False)
 
-        return render_template("user_reset_password.html", message="User not found", success=False)
+        user.password = generate_password_hash(new_pw)
+        db.session.commit()
+        return redirect(url_for("user.user_login"))
 
     return render_template("user_reset_password.html", message=None, success=False)
-
 
 @bp.route("/user_my_forms")
 @login_required
